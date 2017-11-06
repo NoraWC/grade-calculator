@@ -34,7 +34,7 @@ function setTable(category, other) {
     var content = "";
     for (var x = 0; x < 4; x++) {
         content += "<tr><th id = '" + category[x] + "'>" + category[x] + "</th>";
-        content += "<td id = '" + category[x] +"Value'>" + other[x] + "</td>";
+        content += "<td id = '"+category[x]+"Value'>"+"<input type = 'text' id = "+category[x]+"Input>"+other[x]+"</td>";
     }
     final += content + "</table>";
     document.getElementById("main").innerHTML = final;
