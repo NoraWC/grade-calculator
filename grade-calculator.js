@@ -6,8 +6,8 @@
 * button to calculate current grade (NEEDS CATEGORY WEIGHTS)
 * button to calculate necessary final grade (Final exam weight + desired grade)
 * all fields in a table w/ border of 1
-* dummy data to persist even on refresh
-* fails gracefully
+* dummy data to persist even on refresh CHECK
+* fails gracefully (what does this even)
  */
 
 /* CAN HAVE
@@ -20,7 +20,6 @@ var GRADES_FOR = "Homework, Quizzes, Tests, Midterm";
 var GRADE_WEIGHT = "0, 0, 0, 0";
 
 
-//tries to run before page is loaded
 function setTable(category, other, weight) {
     //category should be grades_for
     //other should be whatever variation on class grades is being returned
@@ -49,10 +48,15 @@ function setTable(category, other, weight) {
 
 function sortInputs(inp) {
     //takes all inputs from table
+    var beans = "";
+    if (inp === CLASS_GRADES) {
+        beans = "Input";
+    } else {
+        beans = "Weight";
+    }
     var arr = inp.split(", ");
     for (var z = 0; z < 4; z ++) {
-        //arr[z] = digify(arr[z]);
-        var str = GRADES_FOR.split(", ")[z]+"Input";
+        var str = GRADES_FOR.split(", ")[z]+beans;
         var x = document.getElementById(str).value;
         arr[z] = " " + x;
     }
