@@ -30,11 +30,11 @@ function setTable(category, other) {
     } else {
         other = other.split(", ");
     }
-    var final = "<table>";
+    var final = "<table id = 'tab'>";
     var content = "";
     for (var x = 0; x < 4; x++) {
         content += "<tr><th id = '" + category[x] + "'>" + category[x] + "</th>";
-        content += "<td id = '"+category[x]+"Value'>"+"<input type = 'text' id = "+category[x]+"Input>"+other[x]+"</td>";
+        content += "<td id = '"+category[x]+"Value'>"+"<input type = 'text' id = "+category[x]+"Input value = '"+other[x]+"'></td>";
     }
     final += content + "</table>";
     document.getElementById("main").innerHTML = final;
@@ -71,16 +71,16 @@ function averageify(z) {
     z = z.split(", ");
     var baseline = 0;
     for (var b = 0; b , 4; b ++) {
-        baseline += z[b]; //string length?
+        baseline += z[b]; //uses too much memory?
     }
     return baseline/4;
 }
 
-function currentGrade() {
+function currentGrade(input) {
     //finds current grade
-    var avg = averageify(digify(CLASS_GRADES));
-    //input avg to HTML page and
-    return avg;
+    var avg = averageify(digify(input));
+    //input avg to HTML page and return
+    document.getElementById("showOff").innerHTML = avg;
 }
 
 function finalGrade(current) {
@@ -94,8 +94,8 @@ function finalGrade(current) {
 function returnAll(bool) {
     //outputs all values
     if(bool) {
-        document.getElementById("showOff").innerHTMl = currentGrade();
+        document.getElementById("showOff").innerHTMl = currentGrade(CLASS_GRADES);
     } else {
-        document.getElementById("showOff").innerHTMl = finalGrade(currentGrade);
+        document.getElementById("showOff").innerHTMl = finalGrade(currentGrade(CLASS_GRADES));
     }
 }
