@@ -3,7 +3,7 @@
  */
 
 /* MUST HAVE
-* button to calculate current grade (NEEDS CATEGORY WEIGHTS)
+* button to calculate current grade CHECK
 * button to calculate necessary final grade (Final exam weight + desired grade)
 * all fields in a table w/ border of 1
 * dummy data to persist even on refresh CHECK
@@ -15,9 +15,10 @@
 * data validation + error messages
  */
 
-var CLASS_GRADES = "N/A, N/A, N/A, N/A";
-var GRADES_FOR = "Homework, Quizzes, Tests, Midterm";
-var GRADE_WEIGHT = "0, 0, 0, 0";
+var CLASS_GRADES = "N/A, N/A, N/A, N/A, N/A";
+var GRADES_FOR = "Homework, Quizzes, Tests, Midterm, Final";
+var GRADE_WEIGHT = "N/A, N/A, N/A, N/A, N/A";
+
 
 
 function setTable(category, other, weight) {
@@ -30,77 +31,93 @@ function setTable(category, other, weight) {
     } else {
         other = other.split(", ");
     }
-    if (weight.split(", ")[0]!=="0") {
+    if (weight.split(", ")[0]!=="N/A") {
         weight = digify(weight);
     } else {
         weight = weight.split(", ");
     }
     var final = "<table id = 'tab'>";
     var content = "";
-    for (var x = 0; x < 4; x++) {
+    for (var x = 0; x < 5; x++) {
         content += "<tr><th id = '" + category[x] + "'>" + category[x] + "</th>";
-        content += "<td id = '"+category[x]+"Value'>"+"<input type = 'text' id = "+category[x]+"Input value = '"+other[x]+"'></td>";
-        content += "<td id = '"+category[x]+"Weight'>"+"<input type = 'text' id = "+category[x]+"Weight value = '"+weight[x]+"'></td>";
+        content += "<td id = '"+category[x]+"IValue'>"+"<input type = 'text' id = '"+category[x]+"Input' value = '"+other[x]+"'></td>";
+        content += "<td id = '"+category[x]+"WValue'>"+"<input type = 'text' id = '"+category[x]+"Weight' value = '"+weight[x]+"'></td>";
     }
     final += content + "</table>";
     document.getElementById("main").innerHTML = final;
 }
 
-function sortInputs(inp) {
+function sortInputs(inp1, inp2) {
     //takes all inputs from table
-    var beans = "";
-    if (inp === CLASS_GRADES) {
-        beans = "Input";
-    } else {
-        beans = "Weight";
-    }
-    var arr = inp.split(", ");
-    for (var z = 0; z < 4; z ++) {
-        var str = GRADES_FOR.split(", ")[z]+beans;
-        var x = document.getElementById(str).value;
-        arr[z] = " " + x;
+    var beans = "Input";
+    var cheese = "Weight";
+
+    var arr = inp1.split(", ");
+    var ray = inp2.split(", ");
+    for (var z = 0; z < 5; z ++) {
+        var str1 = GRADES_FOR.split(", ")[z]+beans;
+        arr[z] = " " + document.getElementById(str1).value;
+        var str2 = GRADES_FOR.split(", ")[z]+cheese; //undefined?
+        ray[z] = " " + document.getElementById(str2).value;
     }
     arr = arr.toString();
     arr = arr.substring(1, arr.length);
-    inp = arr;//need to make class grades equal to inp w/o losing vals for grade weight (when implemented)
+    CLASS_GRADES = arr;
+    inp1 = arr;
+    ray = ray.toString();
+    ray = ray.substring(1, ray.length);
+    GRADE_WEIGHT = ray;
+    //inp2 = ray;
     setTable(GRADES_FOR, CLASS_GRADES, GRADE_WEIGHT);
-    return inp;
+    return inp1;
 }
 
 
 function digify(inp) {
     //turns input into number
-    //use string.split(',') and parseInt()
     var final = inp.split(", ");
-    for (var x = 0; x < 4; x ++) {
+    for (var x = 0; x < 5; x ++) {
         final[x] = parseInt(final[x]);
     }
     return final;
 }
 
+function percentify(inp) {
+    inp = digify(inp);
+    for (var x = 0; x < 4; x ++) {
+        inp[x] = inp[x]/100;
+    }
+    return inp;
+}
+
 function averageify(inp) {
     //takes the average of the input (as an array)
-    var str = inp;
+    //grade weights
+    var str = digify(inp);
+    var per = percentify(GRADE_WEIGHT);
     var baseline = 0;
     for (var b = 0; b < 4; b ++) {
-        baseline += str[b]; //uses too much memory?
+        baseline += str[b] * per[b];
     }
-    return baseline/4;
+    return baseline;
 }
 
 function currentGrade(input) {
     //finds current grade
-    //NEEDS CATEGORY WEIGHTS
-    var avg = averageify(digify(input));
+    var avg = averageify(input);
     //input avg to HTML page and return
     document.getElementById("showOff").innerHTML = avg;
     return avg
 }
 
-function finalGrade(current) {
+function finalGrade() {
     //finds final grade needed to get desired output using currentGrade
-    var final = 100-current;
-    //need to output to HTML page
+    var grade = digify(CLASS_GRADES)[4];
+    var weight = digify(GRADE_WEIGHT)[4];
+    var desired = document.getElementById('desired').value;
+    desired = parseInt(desired);
+    var dif = desired - currentGrade;
+    var final = grade*weight/dif;
     document.getElementById("showOff").innerHTML = final.toString();
     return final;
 }
@@ -109,8 +126,8 @@ function finalGrade(current) {
 function returnAll(bool) {
     //outputs all values
     if(bool) {
-        document.getElementById("showOff").innerHTMl = currentGrade(sortInputs(CLASS_GRADES));
+        document.getElementById("showOff").innerHTMl = currentGrade(sortInputs(CLASS_GRADES, GRADE_WEIGHT));
     } else {
-        document.getElementById("showOff").innerHTMl = finalGrade(currentGrade(sortInputs(CLASS_GRADES)));
+        document.getElementById("showOff").innerHTMl = finalGrade();
     }
 }
