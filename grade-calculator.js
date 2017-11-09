@@ -77,6 +77,9 @@ function digify(inp) {
     //turns input into number
     var final = inp.split(", ");
     for (var x = 0; x < 5; x ++) {
+        if(final[x] === "N/A") {
+            final[x] = 0;
+        }
         final[x] = parseInt(final[x]);
     }
     return final;
@@ -90,13 +93,12 @@ function percentify(inp) {
     return inp;
 }
 
-function averageify(inp) {
+function averageify(inp, num) {
     //takes the average of the input (as an array)
-    //grade weights
     var str = digify(inp);
     var per = percentify(GRADE_WEIGHT);
     var baseline = 0;
-    for (var b = 0; b < 4; b ++) {
+    for (var b = 0; b < num; b ++) {
         baseline += str[b] * per[b];
     }
     return baseline;
@@ -104,7 +106,7 @@ function averageify(inp) {
 
 function currentGrade(input) {
     //finds current grade
-    var avg = averageify(input);
+    var avg = averageify(input, 4);
     //input avg to HTML page and return
     document.getElementById("showOff").innerHTML = avg;
     return avg
@@ -112,13 +114,26 @@ function currentGrade(input) {
 
 function finalGrade() {
     //finds final grade needed to get desired output using currentGrade
-    var grade = digify(CLASS_GRADES)[4];
-    var weight = digify(GRADE_WEIGHT)[4];
+
+    //save current grade
+
+    //unaverageify desired grade
+    // subtract all grade vals and divide by all weight vals (including final)
+    //unaverageify current grade
+    // see above
+
+
+    var grade = currentGrade(sortInputs(CLASS_GRADES, GRADE_WEIGHT));
+
+    var weight = digify(GRADE_WEIGHT)[4]; //weight of final
+
     var desired = document.getElementById('desired').value;
     desired = parseInt(desired);
-    var dif = desired - currentGrade;
-    var final = grade*weight/dif;
-    document.getElementById("showOff").innerHTML = final.toString();
+    var dif = desired - grade; //difference between desired grade and current grade
+
+    var ex = (averageify(CLASS_GRADES, 5)+averageify(GRADE_WEIGHT,5))/2;
+    var final = weight/dif;
+    document.getElementById("showOff").innerHTML = (final*100).toString();
     return final;
 }
 
