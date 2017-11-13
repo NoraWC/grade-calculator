@@ -7,7 +7,7 @@
 * button to calculate necessary final grade (Final exam weight + desired grade)
 * all fields in a table w/ border of 1
 * dummy data to persist even on refresh CHECK
-* fails gracefully (what does this even)
+* fails gracefully
  */
 
 /* CAN HAVE
@@ -47,102 +47,93 @@ function setTable(category, other, weight) {
     document.getElementById("main").innerHTML = final;
 }
 
-function sortInputs(inp1, inp2) {
+function sortInputs() {
     //takes all inputs from table
     var beans = "Input";
     var cheese = "Weight";
 
-    var arr = inp1.split(", ");
-    var ray = inp2.split(", ");
+    var arr = CLASS_GRADES.split(", ");
+    var ray = GRADE_WEIGHT.split(", ");
+
     for (var z = 0; z < 5; z ++) {
         var str1 = GRADES_FOR.split(", ")[z]+beans;
         arr[z] = " " + document.getElementById(str1).value;
-        var str2 = GRADES_FOR.split(", ")[z]+cheese; //undefined?
+        var str2 = GRADES_FOR.split(", ")[z]+cheese;
         ray[z] = " " + document.getElementById(str2).value;
     }
+
     arr = arr.toString();
     arr = arr.substring(1, arr.length);
     CLASS_GRADES = arr;
-    inp1 = arr;
     ray = ray.toString();
     ray = ray.substring(1, ray.length);
     GRADE_WEIGHT = ray;
-    //inp2 = ray;
     setTable(GRADES_FOR, CLASS_GRADES, GRADE_WEIGHT);
-    return inp1;
+    return arr;
 }
 
 
 function digify(inp) {
     //turns input into number
-    var final = inp.split(", ");
+    var final = inp.split(", ");//comma-separated string to array
     for (var x = 0; x < 5; x ++) {
-        if(final[x] === "N/A") {
-            final[x] = 0;
+        if(final[x] === "N/A") {//if the field was left blank
+            final[x] = 0;//the value will be 0
         }
-        final[x] = parseInt(final[x]);
+        final[x] = parseInt(final[x]);//turns to int so other functions can use it
     }
     return final;
 }
 
 function percentify(inp) {
-    inp = digify(inp);
-    for (var x = 0; x < 4; x ++) {
-        inp[x] = inp[x]/100;
+    inp = digify(inp);//turns inp to int
+    for (var x = 0; x < 5; x ++) {
+        inp[x] = inp[x]/100;//divide into percentage
     }
     return inp;
 }
 
-function averageify(inp, num) {
+function averageify(inp) {
     //takes the average of the input (as an array)
-    var str = digify(inp);
-    var per = percentify(GRADE_WEIGHT);
+    var str = digify(inp);//turns inputted string vals into array of numbers
+    var per = percentify(GRADE_WEIGHT);//turns grade weight into percentage
     var baseline = 0;
-    for (var b = 0; b < num; b ++) {
+    for (var b = 0; b < 5; b ++) {
         baseline += str[b] * per[b];
     }
     return baseline;
 }
 
-function currentGrade(input) {
+function currentGrade() {
     //finds current grade
-    var avg = averageify(input, 4);
-    //input avg to HTML page and return
-    document.getElementById("showOff").innerHTML = avg;
-    return avg
+    var avg = averageify(sortInputs());//takes average of all grades (including any val for final)
+    if(avg.toString().length>3) {//checks length and cleans up if necessary
+        avg = avg.toString().substring(0, 3);
+        avg = parseInt(avg);
+    }
+    //inputs avg to HTML page and returns
+    document.getElementById("showOff").innerHTML = "Your current grade is: "+avg;
+    return avg;
 }
 
 function finalGrade() {
     //finds final grade needed to get desired output using currentGrade
 
-    //save current grade
-
-    //unaverageify desired grade
-    // subtract all grade vals and divide by all weight vals (including final)
-    //unaverageify current grade
-    // see above
-
-
-    var grade = currentGrade(sortInputs(CLASS_GRADES, GRADE_WEIGHT));
+    var grade = currentGrade(); //finds current grade
 
     var weight = digify(GRADE_WEIGHT)[4]; //weight of final
 
-    var desired = document.getElementById('desired').value;
-    desired = parseInt(desired);
+    var desired = parseInt(document.getElementById('desired').value);//desired grade
+
     var dif = desired - grade; //difference between desired grade and current grade
 
-    var ex = (averageify(CLASS_GRADES, 5)+averageify(GRADE_WEIGHT,5))/2;
-    var final = weight/dif;
-    document.getElementById("showOff").innerHTML = (final*100).toString();
-    return final;
-}
+    var final = dif/weight;//divides by weight to find number required
 
+    final = (final*100).toString();//into percentage + returnable value
 
-function returnAll(bool) {
-    //outputs all values
-    if(bool) {
-        document.getElementById("showOff").innerHTMl = currentGrade(sortInputs(CLASS_GRADES, GRADE_WEIGHT));
-    } else {
-        document.getElementById("showOff").innerHTMl = finalGrade();
+    if(final.length > 4) {
+        final = parseInt(final.substring(0,4)); //cleans up sometimes messy value
     }
+    document.getElementById("showFinal").innerHTMl = "The grade you need on your final is: "+final;
+    return final;
 }
