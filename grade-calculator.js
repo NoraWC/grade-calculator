@@ -99,6 +99,11 @@ function averageify(inp) {
     var per = percentify(GRADE_WEIGHT);//turns grade weight into percentage
     var baseline = 0;
     for (var b = 0; b < 5; b ++) {
+        if(str[4] === 0 || str[4] === "N/A") {
+            var beg = per[4];
+            per[b] += beg/4;
+        }
+
         baseline += str[b] * per[b];
     }
     return baseline;
@@ -119,17 +124,47 @@ function currentGrade() {
 function finalGrade() {
     //finds final grade needed to get desired output using currentGrade
 
+    ///// with typical weights:
+
+    //when all other grades 50:
+    //to get 90: SHOULD BE 140
+
+    //when all other grades 50 and midterm 90:
+    //to get 90: should be 122
+
+    //when all other grades 80:
+    //to get 90: should be 104
+
+    //all other grades 60:
+    //to get 90: should be 128
+
+
+    //grade1*weight1 + grade2*weight2 + grade3*weight3 + grade4*weight4 + grade5*weight5 = desired
+    //grade1*weight1 + grade2*weight2 + grade3*weight3 + grade4*weight4 = desired - grade5*weight5
+    //grade = desired - grade5*weight5
+    //othergrade/weight5 = grade-grade5
+    //othergrade + grade5 = grade
+
+    var str = digify(CLASS_GRADES);
+    var per = percentify(GRADE_WEIGHT);
+    var z = 0;
+    for (var b = 0; b < 5; b ++) {
+        z += str[b] * per[b];
+    }
+
     var grade = currentGrade(); //finds current grade
 
     var weight = digify(GRADE_WEIGHT)[4]; //weight of final
 
     var desired = parseInt(document.getElementById('desired').value);//desired grade
 
-    var dif = desired - grade; //difference between desired grade and current grade
+    var g = z-grade;
 
-    var final = dif/weight;//divides by weight to find number required
+    var h = desired/weight;
 
-    final = (final*100).toString();//into percentage + returnable value
+    var final = h*grade; //difference between desired grade and current grade
+
+
 
     if(final.length > 4) {
         final = parseInt(final.substring(0,4)); //cleans up sometimes messy value
