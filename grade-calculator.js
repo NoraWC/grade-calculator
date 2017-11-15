@@ -4,7 +4,7 @@
 
 /* MUST HAVE
 * button to calculate current grade CHECK
-* button to calculate necessary final grade (Final exam weight + desired grade)
+* button to calculate necessary final grade (Final exam weight + desired grade) CHECK should it ever display >:[
 * all fields in a table w/ border of 1
 * dummy data to persist even on refresh CHECK
 * fails gracefully
@@ -18,7 +18,6 @@
 var CLASS_GRADES = "N/A, N/A, N/A, N/A, N/A";
 var GRADES_FOR = "Homework, Quizzes, Tests, Midterm, Final";
 var GRADE_WEIGHT = "N/A, N/A, N/A, N/A, N/A";
-
 
 
 function setTable(category, other, weight) {
@@ -45,6 +44,7 @@ function setTable(category, other, weight) {
     }
     final += content + "</table>";
     document.getElementById("main").innerHTML = final;
+    //document.getElementById("ShowFinal").innerHTML = final.toString();
 }
 
 function sortInputs() {
@@ -72,6 +72,40 @@ function sortInputs() {
     return arr;
 }
 
+
+function finalGrade() {
+    //finds final grade needed to get desired output using currentGrade
+
+    //doesn't display
+    //isn't quite exact
+
+
+    currentGrade();
+
+    var str = digify(CLASS_GRADES);
+    var per = percentify(GRADE_WEIGHT);
+    var grades = 0;
+    for (var b = 0; b < 5; b ++) {
+        grades += str[b] * per[b];
+    }
+
+    var weight = percentify(GRADE_WEIGHT)[4]; //weight of final
+
+    var desired = parseInt(document.getElementById('desired').value);//desired grade
+
+    var diff = desired - grades;//difference between desired grade and current grade
+
+    var final = diff/weight;//return val--difference of grades divided by weight of final
+
+
+    final = final.toString();
+    if(final.length > 4) {
+        final = final.substring(0,4); //cleans up sometimes messy value
+    }
+    final = "The grade you need on your final is: "+final;
+
+    return final;
+}
 
 function digify(inp) {
     //turns input into number
@@ -119,56 +153,4 @@ function currentGrade() {
     //inputs avg to HTML page and returns
     document.getElementById("showOff").innerHTML = "Your current grade is: "+avg;
     return avg;
-}
-
-function finalGrade() {
-    //finds final grade needed to get desired output using currentGrade
-
-    ///// with typical weights:
-
-    //when all other grades 50:
-    //to get 90: SHOULD BE 140
-
-    //when all other grades 50 and midterm 90:
-    //to get 90: should be 122
-
-    //when all other grades 80:
-    //to get 90: should be 104
-
-    //all other grades 60:
-    //to get 90: should be 128
-
-
-    //grade1*weight1 + grade2*weight2 + grade3*weight3 + grade4*weight4 + grade5*weight5 = desired
-    //grade1*weight1 + grade2*weight2 + grade3*weight3 + grade4*weight4 = desired - grade5*weight5
-    //grade = desired - grade5*weight5
-    //othergrade/weight5 = grade-grade5
-    //othergrade + grade5 = grade
-
-    var str = digify(CLASS_GRADES);
-    var per = percentify(GRADE_WEIGHT);
-    var z = 0;
-    for (var b = 0; b < 5; b ++) {
-        z += str[b] * per[b];
-    }
-
-    var grade = currentGrade(); //finds current grade
-
-    var weight = digify(GRADE_WEIGHT)[4]; //weight of final
-
-    var desired = parseInt(document.getElementById('desired').value);//desired grade
-
-    var g = z-grade;
-
-    var h = desired/weight;
-
-    var final = h*grade; //difference between desired grade and current grade
-
-
-
-    if(final.length > 4) {
-        final = parseInt(final.substring(0,4)); //cleans up sometimes messy value
-    }
-    document.getElementById("showFinal").innerHTMl = "The grade you need on your final is: "+final;
-    return final;
 }

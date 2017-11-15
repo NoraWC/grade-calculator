@@ -16,8 +16,10 @@
 <button id = 'current' class = 'sub' onclick = "currentGrade();">Calculate Current Grade</button>
 <button id = 'final' class = 'sub' onclick = "finalGrade();">Calculate the Grade I Need</button>
 <input title = 'desired' type = 'text'  id = 'desired' value = 'I need a grade of...'>
+<div id="showFinal"><script>document.getElementById("showFinal").innerHTML = finalGrade();</script></div>
 <div id = 'showOff'></div>
-<div id = 'showFinal'>final grade here</div>
+
+
 
 </body>
 </html>
