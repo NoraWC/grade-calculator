@@ -7,22 +7,16 @@
 * button to calculate necessary final grade (Final exam weight + desired grade) CHECK
 * all fields in a table w/ border of 1
 * dummy data to persist even on refresh CHECK
-* fails gracefully
+* fails gracefully CHECK
  */
 
 /* CAN HAVE
 * color coding
 * data validation + error messages
  */
-var CLASS_GRADES = " , N/A, N/A, N/A, N/A, N/A";
-var GRADES_FOR = " , Homework, Quizzes, Tests, Midterm, Final";
-var GRADE_WEIGHT = " , N/A, N/A, N/A, N/A, N/A";
-
-onload = init();
-
-function init() {
-    return 0;
-}
+var CLASS_GRADES = "N/A, N/A, N/A, N/A, N/A";
+var GRADES_FOR = "Homework, Quizzes, Tests, Midterm, Final";
+var GRADE_WEIGHT = "N/A, N/A, N/A, N/A, N/A";
 
 function setTable(category, other, weight) {
     //category should be grades_for
@@ -39,29 +33,29 @@ function setTable(category, other, weight) {
     } else {
         weight = weight.split(", ");
     }
-    var final = "<table id = 'tab'>";
-    var content = "";
-    for (var x = 0; x < 6; x++) {
+    var content = "<table id = 'tab'>";
+    content += "<tr><th id = 'title'></th><td id = 'GradesTitle'>Grades</td><td id = 'WeightTitle'>Weight</td></tr>";
+
+    for (var x = 0; x < 5; x++) {
         content += "<tr><th id = '" + category[x] + "'>" + category[x] + "</th>";
         content += "<td id = '"+category[x]+"IValue'>"+"<input type = 'text' id = '"+category[x]+"Input' value = '"+other[x]+"'></td>";
-        content += "<td id = '"+category[x]+"WValue'>"+"<input type = 'text' id = '"+category[x]+"Weight' value = '"+weight[x]+"'>%</td>";
+        content += "<td id = '"+category[x]+"WValue'>"+"<input type = 'text' id = '"+category[x]+"Weight' value = '"+weight[x]+"'>%</td></tr>";
     }
-    final += content + "</table>";
-    document.getElementById("main").innerHTML = final;
+    content += "<tr><th id = 'displays'></th><td id = 'displaysCurrent'>Your current grade is...</td>";
+    content += "<td id = 'displaysFinal'>The grade you need on your final is...</td></tr>";
+    document.getElementById("main").innerHTML = content + "</table>";
 }
 
 function sortInputs() {
     //takes all inputs from table
-    var beans = "Input";
-    var cheese = "Weight";
 
     var arr = CLASS_GRADES.split(", ");
     var ray = GRADE_WEIGHT.split(", ");
 
-    for (var z = 1; z < 6; z ++) {
-        var str1 = GRADES_FOR.split(", ")[z]+beans;
+    for (var z = 0; z < 5; z ++) {
+        var str1 = GRADES_FOR.split(", ")[z]+"Input";
         arr[z] = " " + document.getElementById(str1).value;
-        var str2 = GRADES_FOR.split(", ")[z]+cheese;
+        var str2 = GRADES_FOR.split(", ")[z]+"Weight";
         ray[z] = " " + document.getElementById(str2).value;
     }
 
@@ -70,43 +64,66 @@ function sortInputs() {
     CLASS_GRADES = arr;
     ray = ray.toString();
     ray = ray.substring(1, ray.length);
+
+    //validates GRADE_WEIGHT
+    var beans = 0;
+    var g = digify(ray);
+    for (var b = 0; b < g.length; b++) {
+        beans += g[b];
+    }
+    if (beans!==100) {
+        document.getElementById("displaysCurrent").innerHTML = "Did you enter your grades correctly? Make sure your percentage weights add up to 100!";
+        return 0;
+    }
+
     GRADE_WEIGHT = ray;
     setTable(GRADES_FOR, CLASS_GRADES, GRADE_WEIGHT);
     return arr;
-
 }
-
 
 function finalGrade() {
     //finds final grade needed to get desired output using currentGrade
 
-
-    document.getElementById("main").innerHTMl = ")";
-
     var str = digify(CLASS_GRADES);
     var per = percentify(GRADE_WEIGHT);
     var grades = 0;
-    for (var b = 1; b < 6; b ++) {
+    for (var b = 0; b < 5; b ++) {
         grades += str[b] * per[b];
     }
-
     var weight = percentify(GRADE_WEIGHT)[4]; //weight of final
 
     var desired = parseInt(document.getElementById('desired').value);//desired grade
+
+    if(desired > 110 || desired < 50) {
+        document.getElementById("displaysFinal").innerHTML = "Are you sure that's the grade you want?";
+        return 0;
+    }
 
     var diff = desired - grades;//difference between desired grade and current grade
 
     var final = diff/weight;//return val--difference of grades divided by weight of final
 
+    if(final > 120) {
+        document.getElementById("displaysFinal").innerHTML = "Are you sure you entered your grades correctly?";
+        //add total possible grade?
+        return 0;
+    }
 
     final = final.toString();
     if(final.length > 4) {
-        final = final.substring(0,4); //cleans up sometimes messy value
+        final = final.substring(0,4);
+        //cleans up sometimes messy value
+        if(final[4]===".") {
+            final = final.substring(0,3);
+        }
     }
-    final = "The grade you need on your final is: "+final;
 
-    document.getElementById("showFinal").innerHTML = final;
-
+    if (final === "NaN") {
+        document.getElementById("displaysFinal").innerHTML = "Make sure you entered the grade you want to get!";
+        return 0;
+    } else {
+        document.getElementById("displaysFinal").innerHTML = " To get a cumulative "+desired+", you need to get "+final+" on your final.";
+    }
     return final;
 }
 
@@ -114,7 +131,7 @@ function digify(inp) {
     //turns input into number
     //comma-separated string to array
     var final = inp.split(", ");
-    for (var x = 1; x < 6; x ++) {
+    for (var x = 0; x < 5; x ++) {
         if(final[x] === "N/A") {
             //if the field was left blank
             //the value will be 0
@@ -128,7 +145,7 @@ function digify(inp) {
 
 function percentify(inp) {
     inp = digify(inp);//turns inp to int
-    for (var x = 1; x < 6; x ++) {
+    for (var x = 0; x < 5; x ++) {
         inp[x] = inp[x]/100;//divide into percentage
     }
     return inp;
@@ -140,7 +157,7 @@ function averageify(inp) {
     var str = digify(inp);//turns inputted string vals into array of numbers
     var per = percentify(GRADE_WEIGHT);//turns grade weight into percentage
     var baseline = 0;
-    for (var b = 1; b < 6; b ++) {
+    for (var b = 0; b < 5; b ++) {
         if(str[4] === 0 || str[4] === "N/A") {
             var beg = per[4];
             per[b] += beg/4;
@@ -151,14 +168,40 @@ function averageify(inp) {
     return baseline;
 }
 
+function gradeify(inp) {
+    //turns to letter grades
+    inp = parseInt(inp);
+    var returnVal = inp;
+    if(inp>=90) {
+        returnVal += ", an A!";
+    } else if (inp >=80) {
+        returnVal += ", a B.";
+    } else if(inp >=70) {
+        returnVal += ", a C.";
+    } else if(inp>=60) {
+        returnVal += ", a D.";
+    } else {
+        returnVal += ", an F!";
+    }
+    return returnVal;
+}
+
 function currentGrade() {
     //finds current grade
+    if(sortInputs() === 0) {
+        return 0;
+    }
     var avg = averageify(sortInputs());//takes average of all grades (including any val for final)
     if(avg.toString().length>3) {//checks length and cleans up if necessary
         avg = avg.toString().substring(0, 3);
         avg = parseInt(avg);
     }
-    //inputs avg to HTML page and returns
-    document.getElementById("showFinal").innerHTML = "Your current grade is: "+avg;
+    if(avg>110 || avg < 10) {
+        document.getElementById("displaysCurrent").innerHTML = "Are you sure you entered your grades correctly?";
+        return 0;
+    } else {
+        avg = gradeify(avg);
+    }
+    document.getElementById("displaysCurrent").innerHTML = "Your current grade is "+avg;
     return avg;
 }
