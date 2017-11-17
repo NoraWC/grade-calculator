@@ -4,6 +4,44 @@
 * color coding (IF TIME)
 */
 
+
+
 #tab {
-    border: 10px black;
+    border: 1px black solid;
+    padding: 5px;
+    margin: 5px;
+    text-overflow-mode: wrap;
+    size: 100px;
+}
+
+.good {
+    background-color: palegreen;
+}
+
+.bad {
+    background-color: lightcoral;
+}
+
+.middle {
+    background-color: lightblue;
+}
+
+
+.simple {
+    border: 0;
+}
+
+.caption {
+    /* border: 1px black solid; */
+}
+
+td.Title {
+    font-style: italic;
+}
+td {
+    border: 1px grey solid;
+    size: 100px;
+}
+input {
+    border: 0;
 }

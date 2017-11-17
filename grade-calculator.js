@@ -12,7 +12,7 @@
 
 /* CAN HAVE
 * color coding
-* data validation + error messages
+* data validation + error messages CHECK
  */
 var CLASS_GRADES = "N/A, N/A, N/A, N/A, N/A";
 var GRADES_FOR = "Homework, Quizzes, Tests, Midterm, Final";
@@ -21,43 +21,83 @@ var GRADE_WEIGHT = "N/A, N/A, N/A, N/A, N/A";
 function setTable(category, other, weight) {
     //category should be grades_for
     //other should be whatever variation on class grades is being returned
+    //weight should be grade_weight
+
     category = category.split(", ");
+    var classroom = 'inp';
+    var key = false;
     if (other.split(", ")[0] !== "N/A") {
         //if there have been grades input
+
         other = digify(other);
+        key = true;
+
     } else {
         other = other.split(", ");
     }
     if (weight.split(", ")[0]!=="N/A") {
+        //if there is a given weight
         weight = digify(weight);
     } else {
         weight = weight.split(", ");
     }
+    //sets up table w/givens
     var content = "<table id = 'tab'>";
-    content += "<tr><th id = 'title'></th><td id = 'GradesTitle'>Grades</td><td id = 'WeightTitle'>Weight</td></tr>";
+    content += "<tr><th></th><td class = 'Title'>Grades</td><td class = 'Title'>Weight</td></tr>";
 
     for (var x = 0; x < 5; x++) {
-        content += "<tr><th id = '" + category[x] + "'>" + category[x] + "</th>";
-        content += "<td id = '"+category[x]+"IValue'>"+"<input type = 'text' id = '"+category[x]+"Input' value = '"+other[x]+"'></td>";
-        content += "<td id = '"+category[x]+"WValue'>"+"<input type = 'text' id = '"+category[x]+"Weight' value = '"+weight[x]+"'>%</td></tr>";
+        if (key) {
+            //checks grade value/whether it's good, bad, or middle
+            if (other[x] === 0) {
+                classroom = 'inp';
+            } else if (other[x]<=50) {
+                //color red
+                classroom = 'bad';
+            } else if (other[x] > 50 && other[x] < 90) {
+                //color blue
+                classroom = 'middle';
+            } else {
+                //color green
+                classroom = 'good';
+            }
+        }
+        //adds input areas to table
+        content += "<tr><th class = 'caption' id = '" + category[x] + "'>" + category[x] + "</th>";
+        content += "<td class = " + classroom + " id = '"+category[x]+"IValue'>"+"<input type = 'text' class = "+classroom+" id = '"+category[x]+"Input' value = '"+other[x]+"'></td>";
+        content += "<td class = "+ classroom + " id = '"+category[x]+"WValue'>"+"<input type = 'text' class = "+classroom+" id = '"+category[x]+"Weight' value = '"+weight[x]+"'>%</td></tr>";
     }
+    //adds desired
+    content += "<tr class = 'simple'><th></th><td>I want a cumulative grade of...</td>";
+    content += "<td><input title = 'desired' type = 'text' id = 'desired' value = 'N/A'></td></tr>";
+
+    //buttons woo
+    content += "<tr class = 'simple'><th id = 'buttons'></th>";
+    content += "<td id = 'currentbutton'><button class = 'sub' onclick = 'currentGrade();'>Calculate Current Grade</button></td>";
+    content += "<td id = 'finalbutton'><button class = 'sub' onclick = 'finalGrade();'>Calculate the Grade I Need</button></td></tr>";
+
+    //shows results
     content += "<tr><th id = 'displays'></th><td id = 'displaysCurrent'>Your current grade is...</td>";
     content += "<td id = 'displaysFinal'>The grade you need on your final is...</td></tr>";
     document.getElementById("main").innerHTML = content + "</table>";
 }
 
+
 function sortInputs() {
     //takes all inputs from table
 
+    //changes to usable values
     var arr = CLASS_GRADES.split(", ");
     var ray = GRADE_WEIGHT.split(", ");
 
     for (var z = 0; z < 5; z ++) {
+        //changes to titles of input areas in table
         var str1 = GRADES_FOR.split(", ")[z]+"Input";
+        //so the values can be taken
         arr[z] = " " + document.getElementById(str1).value;
         var str2 = GRADES_FOR.split(", ")[z]+"Weight";
         ray[z] = " " + document.getElementById(str2).value;
     }
+
 
     arr = arr.toString();
     arr = arr.substring(1, arr.length);
@@ -66,12 +106,12 @@ function sortInputs() {
     ray = ray.substring(1, ray.length);
 
     //validates GRADE_WEIGHT
-    var beans = 0;
+    var total = 0;
     var g = digify(ray);
     for (var b = 0; b < g.length; b++) {
-        beans += g[b];
+        total += g[b];
     }
-    if (beans!==100) {
+    if (total!==100) {
         document.getElementById("displaysCurrent").innerHTML = "Did you enter your grades correctly? Make sure your percentage weights add up to 100!";
         return 0;
     }
@@ -99,13 +139,20 @@ function finalGrade() {
         return 0;
     }
 
-    var diff = desired - grades;//difference between desired grade and current grade
+    //difference between desired grade and current grade
+    var diff = desired - grades;
 
-    var final = diff/weight;//return val--difference of grades divided by weight of final
+    //return val--difference of grades divided by weight of final
+    var final = diff/weight;
+
+    var highest = grades + 120*weight;
 
     if(final > 120) {
-        document.getElementById("displaysFinal").innerHTML = "Are you sure you entered your grades correctly?";
-        //add total possible grade?
+        var returnVal = "Are you sure you entered your grades correctly?";
+        returnVal += " The highest possible grade you can get is a " + highest;
+        returnVal += ", which requires a 120 on your final.";
+        document.getElementById("displaysFinal").innerHTML = returnVal;
+        //add highest possible grade w/these vals?
         return 0;
     }
 
