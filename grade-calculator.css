@@ -1,47 +1,62 @@
 /*
 * css styling: font-family, font-style, font-size, element spacing, element size, margins
 * title, legible font, usable layout
-* color coding (IF TIME)
+* color coding (IF TIME) CHECK
 */
-
-
+body {
+    background-color: aliceblue;
+}
 
 #tab {
     border: 1px black solid;
     padding: 5px;
-    margin: 5px;
+    margin-top: 5px;
     text-overflow-mode: wrap;
-    size: 100px;
+    column-width: 800px;
+    background-color: inherit;
+    margin-left:33%;
+    margin-right:33%;
 }
-
 .good {
     background-color: palegreen;
 }
-
 .bad {
     background-color: lightcoral;
 }
-
 .middle {
     background-color: lightblue;
 }
 
-
-.simple {
-    border: 0;
-}
-
-.caption {
-    /* border: 1px black solid; */
-}
-
 td.Title {
     font-style: italic;
+    border:0;
+    text-align: center;
 }
 td {
     border: 1px grey solid;
-    size: 100px;
+    width: 40%;
 }
 input {
+    border: 0;
+    width: 90%;
+    background-color: inherit;
+}
+button {
+    background-color: red;
+    border-radius: 50%;
+    border: 2px black;
+    width: 70px;
+    height: 70px;
+}
+.end {
+    margin-right: 20px;
+    margin-top: auto;
+}
+.total {
+    margin-left: 30px;
+}
+
+
+td#sub {
     border: 0;
 }

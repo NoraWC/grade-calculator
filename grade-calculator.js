@@ -5,13 +5,13 @@
 /* MUST HAVE
 * button to calculate current grade CHECK
 * button to calculate necessary final grade (Final exam weight + desired grade) CHECK
-* all fields in a table w/ border of 1
+* all fields in a table w/ border of 1 CHECK
 * dummy data to persist even on refresh CHECK
 * fails gracefully CHECK
  */
 
 /* CAN HAVE
-* color coding
+* color coding CHECK
 * data validation + error messages CHECK
  */
 var CLASS_GRADES = "N/A, N/A, N/A, N/A, N/A";
@@ -67,17 +67,17 @@ function setTable(category, other, weight) {
         content += "<td class = "+ classroom + " id = '"+category[x]+"WValue'>"+"<input type = 'text' class = "+classroom+" id = '"+category[x]+"Weight' value = '"+weight[x]+"'>%</td></tr>";
     }
     //adds desired
-    content += "<tr class = 'simple'><th></th><td>I want a cumulative grade of...</td>";
+    content += "<tr><th></th><td>I want a total grade of...</td>";
     content += "<td><input title = 'desired' type = 'text' id = 'desired' value = 'N/A'></td></tr>";
 
     //buttons woo
-    content += "<tr class = 'simple'><th id = 'buttons'></th>";
-    content += "<td id = 'currentbutton'><button class = 'sub' onclick = 'currentGrade();'>Calculate Current Grade</button></td>";
-    content += "<td id = 'finalbutton'><button class = 'sub' onclick = 'finalGrade();'>Calculate the Grade I Need</button></td></tr>";
+    content += "<tr><th id = 'buttons'></th>";
+    content += "<td class = 'sub'><button id = 'total' onclick = 'currentGrade();'>Calculate My Current Grade</button></td>";
+    content += "<td class = 'sub'><button id = 'end' onclick = 'finalGrade();'>Calculate the Grade I Need</button></td></tr>";
 
     //shows results
-    content += "<tr><th id = 'displays'></th><td id = 'displaysCurrent'>Your current grade is...</td>";
-    content += "<td id = 'displaysFinal'>The grade you need on your final is...</td></tr>";
+    content += "<tr><th id = 'displays'></th><td class = 'showOff' id = 'displaysCurrent'>My current total grade in this class is... </td>";
+    content += "<td class = 'showOff' id = 'displaysFinal'>The grade I need on my final is... </td></tr>";
     document.getElementById("main").innerHTML = content + "</table>";
 }
 
@@ -112,7 +112,7 @@ function sortInputs() {
         total += g[b];
     }
     if (total!==100) {
-        document.getElementById("displaysCurrent").innerHTML = "Did you enter your grades correctly? Make sure your percentage weights add up to 100!";
+        document.getElementById("displaysCurrent").innerHTML = "Check the values you entered. Do the grade weights add up to 100?";
         return 0;
     }
 
@@ -134,6 +134,7 @@ function finalGrade() {
 
     var desired = parseInt(document.getElementById('desired').value);//desired grade
 
+    //validates desired
     if(desired > 110 || desired < 50) {
         document.getElementById("displaysFinal").innerHTML = "Are you sure that's the grade you want?";
         return 0;
@@ -152,7 +153,6 @@ function finalGrade() {
         returnVal += " The highest possible grade you can get is a " + highest;
         returnVal += ", which requires a 120 on your final.";
         document.getElementById("displaysFinal").innerHTML = returnVal;
-        //add highest possible grade w/these vals?
         return 0;
     }
 
@@ -169,7 +169,7 @@ function finalGrade() {
         document.getElementById("displaysFinal").innerHTML = "Make sure you entered the grade you want to get!";
         return 0;
     } else {
-        document.getElementById("displaysFinal").innerHTML = " To get a cumulative "+desired+", you need to get "+final+" on your final.";
+        document.getElementById("displaysFinal").innerHTML = "The grade you need on your final is "+final;
     }
     return final;
 }
