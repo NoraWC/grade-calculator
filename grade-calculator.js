@@ -118,7 +118,7 @@ function sortInputs() {
     }
 
     if (total!==100 || !key) {
-        document.getElementById("displaysCurrent").innerHTML = "Check the values you entered. Do the grade weights add up to 100? Even if you don't have a grade for a category, enter the weight.";
+        document.getElementById("displaysCurrent").innerHTML = "Do your grade weights add up to 100? Are your grades correct?";
         return 0;
     }
 
