@@ -50,10 +50,10 @@ function setTable(category, other, weight) {
             } else if (other[x]<=50) {
                 //red
                 classroom = 'bad';
-            } else if (other[x] > 50 && other[x] < 90) {
+            } else if (other[x] < 90) {
                 //blue
                 classroom = 'middle';
-            } else if (other[x] > 90 && other[x] < 120) {
+            } else if (other[x] < 120) {
                 //green
                 classroom = 'good';
             }
@@ -107,7 +107,17 @@ function sortInputs() {
     for (var b = 0; b < g.length; b++) {
         total += g[b];
     }
-    if (total!==100) {
+
+    //validates grade vals
+    var key = true;
+    var x = digify(arr);
+    for (var i =0; i< x.length; i ++) {
+        if(x[i] < 0 || x[i] > 120) {
+            key = false;
+        }
+    }
+
+    if (total!==100 || !key) {
         document.getElementById("displaysCurrent").innerHTML = "Check the values you entered. Do the grade weights add up to 100? Even if you don't have a grade for a category, enter the weight.";
         return 0;
     }
