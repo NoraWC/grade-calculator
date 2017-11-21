@@ -13,16 +13,25 @@ function setTable(category, other, weight) {
     category = category.split(", ");
     var classroom = 'inp';
     var key = false;
-    if (other.split(", ")[0] !== "N/A") {
-        //if there have been grades input
-        other = digify(other);
-        key = true;
+    var lock = false;
 
+    for (var count = 0; count < category.length; count ++) {
+        if (other.split(", ")[count]!=="N/A") {
+            //if there have been grades input
+            key = true;
+        }
+        if (weight.split(", ")[count]!=="N/A") {
+            //if there is a given weight
+            lock = true;
+        }
+    }
+    if(key) {
+        other = digify(other);
     } else {
         other = other.split(", ");
     }
-    if (weight.split(", ")[0]!=="N/A") {
-        //if there is a given weight
+
+    if (lock) {
         weight = digify(weight);
     } else {
         weight = weight.split(", ");
@@ -55,7 +64,7 @@ function setTable(category, other, weight) {
         content += "<td class = "+ classroom + " id = '"+category[x]+"WValue'>"+"<input type = 'text' class = "+classroom+" id = '"+category[x]+"Weight' value = '"+weight[x]+"'>%</td></tr>";
     }
     //add desired
-    content += "<tr><th></th><td>I want a total grade of...</td>";
+    content += "<tr><th></th><td>Enter your desired grade:</td>";
     content += "<td><input title = 'desired' type = 'text' id = 'desired' value = 'N/A'></td></tr>";
 
     //add buttons
@@ -99,12 +108,12 @@ function sortInputs() {
         total += g[b];
     }
     if (total!==100) {
-        document.getElementById("displaysCurrent").innerHTML = "Check the values you entered. Do the grade weights add up to 100?";
+        document.getElementById("displaysCurrent").innerHTML = "Check the values you entered. Do the grade weights add up to 100? Even if you don't have a grade for a category, enter the weight.";
         return 0;
     }
 
     GRADE_WEIGHT = ray;
-    //displays values needed
+    //resets table with user values
     setTable(GRADES_FOR, CLASS_GRADES, GRADE_WEIGHT);
     return arr;
 }
@@ -140,13 +149,12 @@ function finalGrade() {
 
     //if the desired grade is unreasonably high
     if(final > 120) {
-        var returnVal = "Are you sure you entered your grades correctly? The highest possible grade you can get is a " + highest;
-        returnVal += ", which requires a 120 on your final.";
-        document.getElementById("displaysFinal").innerHTML = returnVal;
+        document.getElementById("displaysFinal").innerHTML = "The highest grade you can get is a " + highest+", which requires a 120 on your final.";
         return 0;
     }
 
-    if (final < 0) {
+    if (final < 50 || desired < grades) {
+        //if the user has low expectations
         var deer = "Are you sure that's the grade you want? Your current grade is already higher than that. ";
         deer += "If you get a 120 on your final, you could get a " + highest + ".";
         document.getElementById("displaysFinal").innerHTML = deer;
