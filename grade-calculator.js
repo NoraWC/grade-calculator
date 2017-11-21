@@ -53,7 +53,7 @@ function setTable(category, other, weight) {
             } else if (other[x] > 50 && other[x] < 90) {
                 //blue
                 classroom = 'middle';
-            } else {
+            } else if (other[x] > 90 && other[x] < 120) {
                 //green
                 classroom = 'good';
             }
