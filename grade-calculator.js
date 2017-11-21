@@ -1,18 +1,5 @@
-/* calculates current grade in a class and
-* tells you what grade you need on final to get a desired overall grade
- */
-
-/* MUST HAVE
-* button to calculate current grade CHECK
-* button to calculate necessary final grade (Final exam weight + desired grade) CHECK
-* all fields in a table w/ border of 1 CHECK
-* dummy data to persist even on refresh CHECK
-* fails gracefully CHECK
- */
-
-/* CAN HAVE
-* color coding CHECK
-* data validation + error messages CHECK
+/* Grade Calculator Nora Coates
+*
  */
 var CLASS_GRADES = "N/A, N/A, N/A, N/A, N/A";
 var GRADES_FOR = "Homework, Quizzes, Tests, Midterm, Final";
@@ -28,7 +15,6 @@ function setTable(category, other, weight) {
     var key = false;
     if (other.split(", ")[0] !== "N/A") {
         //if there have been grades input
-
         other = digify(other);
         key = true;
 
@@ -41,43 +27,45 @@ function setTable(category, other, weight) {
     } else {
         weight = weight.split(", ");
     }
-    //sets up table w/givens
+
+    //sets up first part of html table
     var content = "<table id = 'tab'>";
     content += "<tr><th></th><td class = 'Title'>Grades</td><td class = 'Title'>Weight</td></tr>";
 
+    //checks grade value and color codes
     for (var x = 0; x < 5; x++) {
         if (key) {
-            //checks grade value/whether it's good, bad, or middle
             if (other[x] === 0) {
+                //placeholder (resets color values)
                 classroom = 'inp';
             } else if (other[x]<=50) {
-                //color red
+                //red
                 classroom = 'bad';
             } else if (other[x] > 50 && other[x] < 90) {
-                //color blue
+                //blue
                 classroom = 'middle';
             } else {
-                //color green
+                //green
                 classroom = 'good';
             }
         }
-        //adds input areas to table
+        //add input areas to table
         content += "<tr><th class = 'caption' id = '" + category[x] + "'>" + category[x] + "</th>";
         content += "<td class = " + classroom + " id = '"+category[x]+"IValue'>"+"<input type = 'text' class = "+classroom+" id = '"+category[x]+"Input' value = '"+other[x]+"'></td>";
         content += "<td class = "+ classroom + " id = '"+category[x]+"WValue'>"+"<input type = 'text' class = "+classroom+" id = '"+category[x]+"Weight' value = '"+weight[x]+"'>%</td></tr>";
     }
-    //adds desired
+    //add desired
     content += "<tr><th></th><td>I want a total grade of...</td>";
     content += "<td><input title = 'desired' type = 'text' id = 'desired' value = 'N/A'></td></tr>";
 
-    //buttons woo
+    //add buttons
     content += "<tr><th id = 'buttons'></th>";
-    content += "<td class = 'sub'><button id = 'total' onclick = 'currentGrade();'>Calculate My Current Grade</button></td>";
-    content += "<td class = 'sub'><button id = 'end' onclick = 'finalGrade();'>Calculate the Grade I Need</button></td></tr>";
+    content += "<td class = 'sub'><button id = 'total' onclick = 'currentGrade();'>Calculate Your Current Grade</button></td>";
+    content += "<td class = 'sub'><button id = 'end' onclick = 'finalGrade();'>Calculate the Grade You Need</button></td></tr>";
 
-    //shows results
-    content += "<tr><th id = 'displays'></th><td class = 'showOff' id = 'displaysCurrent'>My current total grade in this class is... </td>";
-    content += "<td class = 'showOff' id = 'displaysFinal'>The grade I need on my final is... </td></tr>";
+    //show results
+    content += "<tr><th id = 'displays'></th><td class = 'showOff' id = 'displaysCurrent'>Your current total grade in this class is... </td>";
+    content += "<td class = 'showOff' id = 'displaysFinal'>The grade you need on your final is... </td></tr>";
     document.getElementById("main").innerHTML = content + "</table>";
 }
 
@@ -90,15 +78,14 @@ function sortInputs() {
     var ray = GRADE_WEIGHT.split(", ");
 
     for (var z = 0; z < 5; z ++) {
-        //changes to titles of input areas in table
+        //replaces placeholders with user values from table
         var str1 = GRADES_FOR.split(", ")[z]+"Input";
-        //so the values can be taken
         arr[z] = " " + document.getElementById(str1).value;
         var str2 = GRADES_FOR.split(", ")[z]+"Weight";
         ray[z] = " " + document.getElementById(str2).value;
     }
 
-
+    //cleans up values and turns to string
     arr = arr.toString();
     arr = arr.substring(1, arr.length);
     CLASS_GRADES = arr;
@@ -117,22 +104,24 @@ function sortInputs() {
     }
 
     GRADE_WEIGHT = ray;
+    //displays values needed
     setTable(GRADES_FOR, CLASS_GRADES, GRADE_WEIGHT);
     return arr;
 }
 
 function finalGrade() {
-    //finds final grade needed to get desired output using currentGrade
-
+    //finds final grade needed to get desired output by using currentGrade
     var str = digify(CLASS_GRADES);
     var per = percentify(GRADE_WEIGHT);
     var grades = 0;
     for (var b = 0; b < 5; b ++) {
         grades += str[b] * per[b];
     }
-    var weight = percentify(GRADE_WEIGHT)[4]; //weight of final
+    //weight of final
+    var weight = percentify(GRADE_WEIGHT)[4];
 
-    var desired = parseInt(document.getElementById('desired').value);//desired grade
+    //desired grade
+    var desired = parseInt(document.getElementById('desired').value);
 
     //validates desired
     if(desired > 110 || desired < 50) {
@@ -143,27 +132,29 @@ function finalGrade() {
     //difference between desired grade and current grade
     var diff = desired - grades;
 
-    //return val--difference of grades divided by weight of final
+    //return val(difference of grades divided by weight of final)
     var final = diff/weight;
 
+    //the highest possible cumulative grade given other grades
     var highest = grades + 120*weight;
 
+    //if the desired grade is unreasonably high
     if(final > 120) {
-        var returnVal = "Are you sure you entered your grades correctly?";
-        returnVal += " The highest possible grade you can get is a " + highest;
+        var returnVal = "Are you sure you entered your grades correctly? The highest possible grade you can get is a " + highest;
         returnVal += ", which requires a 120 on your final.";
         document.getElementById("displaysFinal").innerHTML = returnVal;
         return 0;
     }
 
-    final = final.toString();
-    if(final.length > 4) {
-        final = final.substring(0,4);
-        //cleans up sometimes messy value
-        if(final[4]===".") {
-            final = final.substring(0,3);
-        }
+    if (final < 0) {
+        var deer = "Are you sure that's the grade you want? Your current grade is already higher than that. ";
+        deer += "If you get a 120 on your final, you could get a " + highest + ".";
+        document.getElementById("displaysFinal").innerHTML = deer;
+        return 0;
     }
+
+    final = Math.round(final);
+    final = final.toString();
 
     if (final === "NaN") {
         document.getElementById("displaysFinal").innerHTML = "Make sure you entered the grade you want to get!";
@@ -175,25 +166,28 @@ function finalGrade() {
 }
 
 function digify(inp) {
-    //turns input into number
-    //comma-separated string to array
+    //turns input from comma-separated string into array of numbers
+
+    //converts to array
     var final = inp.split(", ");
     for (var x = 0; x < 5; x ++) {
         if(final[x] === "N/A") {
-            //if the field was left blank
-            //the value will be 0
+            //if the field was left blank, the value will be 0
             final[x] = 0;
         }
-        //turns to int so other functions can use it
         final[x] = parseInt(final[x]);
     }
     return final;
 }
 
 function percentify(inp) {
-    inp = digify(inp);//turns inp to int
+    //turns comma-separated string into array of percentages
+
+    //turns inp to int
+    inp = digify(inp);
     for (var x = 0; x < 5; x ++) {
-        inp[x] = inp[x]/100;//divide into percentage
+        //divide into percentage
+        inp[x] = inp[x]/100;
     }
     return inp;
 
@@ -201,22 +195,29 @@ function percentify(inp) {
 
 function averageify(inp) {
     //takes the average of the input (as an array)
-    var str = digify(inp);//turns inputted string vals into array of numbers
-    var per = percentify(GRADE_WEIGHT);//turns grade weight into percentage
+
+    //turns inputted string value into array of numbers
+    var str = digify(inp);
+    //turns grade weight into array of percentages
+    var per = percentify(GRADE_WEIGHT);
+    //return value
     var baseline = 0;
     for (var b = 0; b < 5; b ++) {
+        //if the final value is empty
         if(str[4] === 0 || str[4] === "N/A") {
+            //distribute that weight among the other categories to avoid bad math
             var beg = per[4];
             per[b] += beg/4;
         }
-
+        //add the grade value multiplied by the percentage weight
         baseline += str[b] * per[b];
     }
     return baseline;
 }
 
 function gradeify(inp) {
-    //turns to letter grades
+    //turns string input to letter grade
+
     inp = parseInt(inp);
     var returnVal = inp;
     if(inp>=90) {
@@ -235,18 +236,21 @@ function gradeify(inp) {
 
 function currentGrade() {
     //finds current grade
+
+    //if there was bad data input, it won't run
     if(sortInputs() === 0) {
         return 0;
     }
-    var avg = averageify(sortInputs());//takes average of all grades (including any val for final)
-    if(avg.toString().length>3) {//checks length and cleans up if necessary
-        avg = avg.toString().substring(0, 3);
-        avg = parseInt(avg);
-    }
-    if(avg>110 || avg < 10) {
+    //takes average of all grades (including any value for the final)
+    var avg = averageify(sortInputs());
+    //cleans up grade average
+    avg = Math.round(avg);
+    //if the average is ridiculously high or low
+    if(avg>120 || avg <= 5) {
         document.getElementById("displaysCurrent").innerHTML = "Are you sure you entered your grades correctly?";
         return 0;
     } else {
+        //otherwise, concatenate a letter grade
         avg = gradeify(avg);
     }
     document.getElementById("displaysCurrent").innerHTML = "Your current grade is "+avg;
